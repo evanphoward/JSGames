@@ -53,7 +53,21 @@ function selectPiece() {
     selectedPiece.isKing = document.getElementById(selectedPiece.pieceId).classList.contains("king");
     selectedPiece.spaces = [false, false, false, false, false, false, false, false];
 
-    // Get all possible moves
+    getAvailableMoves();
+
+    // If there are possible moves, change the border and update the possible move locations with listeners
+    if(selectedPiece.spaces.includes(true)) {
+        document.getElementById(selectedPiece.pieceId).style.border = "3px solid green";
+        for (let i = 0; i < 8; i++) {
+            if (selectedPiece.spaces[i]) {
+                cells[selectedPiece.indexOfBoardPiece + moves[i]].setAttribute("onclick", "makeMove(" + moves[i] + ")")
+                cells[selectedPiece.indexOfBoardPiece + moves[i]].classList.add("moveOption");
+            }
+        }
+    }
+}
+
+function getAvailableMoves() {
     for(let i = 0; i < 8; i++) {
         if(board[selectedPiece.indexOfBoardPiece + moves[i]] === -1 && !cells[selectedPiece.indexOfBoardPiece + moves[i]].classList.contains("noPiece")) {
             if(i === 0 || i === 1 || i === 4 || i === 5) {
@@ -70,21 +84,12 @@ function selectPiece() {
             }
         }
     }
-
-    // If there are possible moves, change the border and update the possible move locations with listeners
-    if(selectedPiece.spaces.includes(true)) {
-        document.getElementById(selectedPiece.pieceId).style.border = "3px solid green";
-        for (let i = 0; i < 8; i++) {
-            if (selectedPiece.spaces[i]) {
-                cells[selectedPiece.indexOfBoardPiece + moves[i]].setAttribute("onclick", "makeMove(" + moves[i] + ")")
-            }
-        }
-    }
 }
 
 function removeCellOnclick() {
     for(let i = 0; i < cells.length; i++) {
         cells[i].removeAttribute("onclick");
+        cells[i].classList.remove("moveOption");
     }
 }
 
@@ -123,17 +128,21 @@ function changeData(indexOfBoardPiece, modifiedIndex, removePiece) {
         }
     }
 
+    // Reset selected pice
     selectedPiece.pieceId = -1;
     selectedPiece.indexOfBoardPiece = -1;
     selectedPiece.isKing = false;
     selectedPiece.spaces = [false, false, false, false, false, false, false, false]
 
+    // Reset all selected cells
     removeCellOnclick();
 
+    // Remove all listeners
     for (let i = 0; i < playerPieces.length; i++) {
         playerPieces[i].removeEventListener("click", selectPiece);
     }
 
+    // Check for win
     if(blackScore === 0 || redScore === 0) {
         divider.style.display = "none";
         if(blackScore === 0) {
@@ -148,6 +157,7 @@ function changeData(indexOfBoardPiece, modifiedIndex, removePiece) {
         }
     }
 
+    // Switch turn
     if (turn) {
         turn = false;
         redTurn.style.color = "lightGrey";
