@@ -48,12 +48,17 @@ function selectPiece() {
     }
 
     // Update current selected piece parameters
-    selectedPiece.pieceId = parseInt(event.target.id);
-    selectedPiece.indexOfBoardPiece = board.indexOf(selectedPiece.pieceId);
-    selectedPiece.isKing = document.getElementById(selectedPiece.pieceId).classList.contains("king");
-    selectedPiece.spaces = [false, false, false, false, false, false, false, false];
+    if(selectedPiece.indexOfBoardPiece !== 64) {
+        selectedPiece.pieceId = parseInt(event.target.id);
+        selectedPiece.indexOfBoardPiece = board.indexOf(selectedPiece.pieceId);
+        selectedPiece.isKing = document.getElementById(selectedPiece.pieceId).classList.contains("king");
+        selectedPiece.spaces = [false, false, false, false, false, false, false, false];
 
-    getAvailableMoves();
+        getAvailableMoves();
+    }
+    else {
+        selectedPiece.indexOfBoardPiece = board.indexOf(selectedPiece.pieceId);
+    }
 
     // If there are possible moves, change the border and update the possible move locations with listeners
     if(selectedPiece.spaces.includes(true)) {
@@ -118,17 +123,32 @@ function changeData(indexOfBoardPiece, modifiedIndex, removePiece) {
     }
     if (removePiece) {
         board[removePiece] = -1;
+        cells[removePiece].innerHTML = "";
         if (turn && selectedPiece.pieceId < 12) {
-            cells[removePiece].innerHTML = "";
-            blackScore--
+            blackScore--;
         }
         if (turn === false && selectedPiece.pieceId >= 12) {
-            cells[removePiece].innerHTML = "";
-            redScore--
+            redScore--;
+        }
+
+        selectedPiece.indexOfBoardPiece = modifiedIndex;
+        selectedPiece.spaces = [false, false, false, false, false, false, false, false, false]
+        getAvailableMoves();
+        if(selectedPiece.spaces[2] || selectedPiece.spaces[3] || selectedPiece.spaces[6] || selectedPiece.spaces[7]) {
+            for (let i = 0; i < playerPieces.length; i++) {
+                playerPieces[i].removeEventListener("click", selectPiece);
+            }
+            selectedPiece.spaces[0] = false;
+            selectedPiece.spaces[1] = false;
+            selectedPiece.spaces[4] = false;
+            selectedPiece.spaces[5] = false;
+            selectedPiece.indexOfBoardPiece = 64;
+            selectPiece();
+            return;
         }
     }
 
-    // Reset selected pice
+    // Reset selected piece
     selectedPiece.pieceId = -1;
     selectedPiece.indexOfBoardPiece = -1;
     selectedPiece.isKing = false;
@@ -143,18 +163,12 @@ function changeData(indexOfBoardPiece, modifiedIndex, removePiece) {
     }
 
     // Check for win
+    // TODO: Check for no possible moves left
     if(blackScore === 0 || redScore === 0) {
         divider.style.display = "none";
-        if(blackScore === 0) {
-            redTurn.style.color = "black";
-            blackTurn.style.display = "none";
-            redTurn.textContent = "RED WINS!";
-        }
-        else if(redScore === 0) {
-            blackTurn.style.color = "black";
-            redTurn.style.display = "none";
-            blackTurn.textContent = "BLACK WINS!";
-        }
+        redTurn.style.color = "black";
+        blackTurn.style.display = "none";
+        redTurn.textContent = redScore === 0 ? "BLACK WINS!" : "RED WINS!";
     }
 
     // Switch turn
