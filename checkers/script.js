@@ -107,11 +107,7 @@ function makeMove(number) {
     blackPieces = document.querySelectorAll("div.blackPiece");
 
     let indexOfPiece = selectedPiece.indexOfBoardPiece
-    if (number === 14 || number === -14 || number === 18 || number === -18) {
-        changeData(indexOfPiece, indexOfPiece + number, indexOfPiece + number / 2);
-    } else {
-        changeData(indexOfPiece, indexOfPiece + number);
-    }
+    changeData(indexOfPiece, indexOfPiece + number, indexOfPiece + number / 2);
 }
 
 function changeData(indexOfBoardPiece, modifiedIndex, removePiece) {
@@ -121,7 +117,7 @@ function changeData(indexOfBoardPiece, modifiedIndex, removePiece) {
         (!turn && selectedPiece.pieceId >= 12 && modifiedIndex <= 7)) {
         document.getElementById(selectedPiece.pieceId).classList.add("king")
     }
-    if (removePiece) {
+    if (Number.isInteger(removePiece)) {
         board[removePiece] = -1;
         cells[removePiece].innerHTML = "";
         if (turn && selectedPiece.pieceId < 12) {
@@ -174,12 +170,12 @@ function changeData(indexOfBoardPiece, modifiedIndex, removePiece) {
     // Switch turn
     if (turn) {
         turn = false;
-        redTurn.style.color = "lightGrey";
-        blackTurn.style.color = "black";
+        redTurn.style.color = "#26797a";
+        blackTurn.style.color = "white";
     } else {
         turn = true;
-        blackTurn.style.color = "lightGrey";
-        redTurn.style.color = "black";
+        blackTurn.style.color = "#26797a";
+        redTurn.style.color = "white";
     }
 
     givePiecesEventListeners();
