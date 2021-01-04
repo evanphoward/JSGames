@@ -37,7 +37,7 @@ function updateScreen() {
     playerA += playerAV
     if(playerV !== 0) {
         let newPlayerX = playerX + (playerV * Math.sin(playerA * Math.PI / 180))
-        let newPlayerY = playerY + (playerV * Math.cos(playerA * Math.PI / 180))
+        let newPlayerY = playerY - (playerV * Math.cos(playerA * Math.PI / 180))
         if(maze[Math.floor(newPlayerY) * mazeWidth + Math.floor(newPlayerX)] !== '#') {
             playerX = newPlayerX
             playerY = newPlayerY
@@ -55,7 +55,7 @@ function updateScreen() {
         while(!hitWall) {
             distanceToWall += 0.1;
 
-            if(maze[Math.floor(playerY + rayY * distanceToWall) * mazeWidth + Math.floor(playerX + rayX * distanceToWall)] === '#') {
+            if(maze[Math.floor(playerY - rayY * distanceToWall) * mazeWidth + Math.floor(playerX + rayX * distanceToWall)] === '#') {
                 hitWall = true;
             }
         }
