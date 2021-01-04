@@ -15,13 +15,17 @@ const maze = [
 const mazeHeight = 11;
 const mazeWidth = 11;
 
-const screenWidth = 120;
-const screenHeight = 58;
+const screenWidth = 200;
+const screenHeight = 356;
 
-const pixels = document.querySelectorAll("td");
+const canvas = document.querySelector("canvas");
+canvas.width = screenWidth;
+canvas.height = screenHeight;
+const canvas_ctx = canvas.getContext('2d');
 
-let playerX = 1;
-let playerY = 1;
+
+let playerX = 1.5;
+let playerY = 1.5;
 let playerA = 90;
 
 const FOV = 120;
@@ -48,16 +52,17 @@ function updateScreen() {
 
         for(let y = 0; y < screenHeight; y++) {
             if(y < ceilingHeight) {
-                let ceilingColor = ((ceilingHeight - y) / ceilingHeight) * 180;
-                pixels[y * screenWidth + x].style.backgroundColor = "rgb("+ceilingColor+", 0, 0)";
+                let ceilingColor = (1 - (y / (screenHeight / 3))) * 128;
+                canvas_ctx.fillStyle = "rgba("+ceilingColor+",0,0,1)"
             }
             else if(y > screenHeight - ceilingHeight) {
                 let ceilingColor = (1 - ((screenHeight - y) / ceilingHeight)) * 180;
-                pixels[y * screenWidth + x].style.backgroundColor = "rgb("+ceilingColor+", 0, 0)";
+                canvas_ctx.fillStyle = "rgba("+ceilingColor+",0,0,1)"
             }
             else {
-                pixels[y * screenWidth + x].style.backgroundColor = "rgb("+color+", "+color+", "+color+")";
+                canvas_ctx.fillStyle = "rgba("+color+","+color+","+color+",1)"
             }
+            canvas_ctx.fillRect(x, y, 1, 1);
         }
     }
 
@@ -66,9 +71,9 @@ function updateScreen() {
 
 document.addEventListener('keypress', (e) => {
     if(e.code === 'KeyD')
-        playerA += 3
+        playerA += 4
     else if(e.code === 'KeyA')
-        playerA -= 3
+        playerA -= 4
     else if(e.code === 'KeyW') {
         let newPlayerX = playerX + Math.sin(playerA * Math.PI / 180)
         let newPlayerY = playerY + Math.cos(playerA * Math.PI / 180)
