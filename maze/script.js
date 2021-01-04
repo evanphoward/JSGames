@@ -28,9 +28,22 @@ let playerX = 1.5;
 let playerY = 1.5;
 let playerA = 90;
 
+let playerAV = 0;
+let playerV = 0;
+
 const FOV = 120;
 
 function updateScreen() {
+    playerA += playerAV
+    if(playerV !== 0) {
+        let newPlayerX = playerX + (playerV * Math.sin(playerA * Math.PI / 180))
+        let newPlayerY = playerY + (playerV * Math.cos(playerA * Math.PI / 180))
+        if(maze[Math.floor(newPlayerY) * mazeWidth + Math.floor(newPlayerX)] !== '#') {
+            playerX = newPlayerX
+            playerY = newPlayerY
+        }
+    }
+
     for(let x = 0; x < screenWidth; x++) {
         let rayAngle = (playerA - FOV / 2) + (x / screenWidth) * FOV;
         let distanceToWall = 0;
@@ -69,27 +82,22 @@ function updateScreen() {
     window.requestAnimationFrame(updateScreen);
 }
 
-document.addEventListener('keypress', (e) => {
+document.addEventListener('keydown', (e) => {
     if(e.code === 'KeyD')
-        playerA += 4
+        playerAV = 8
     else if(e.code === 'KeyA')
-        playerA -= 4
-    else if(e.code === 'KeyW') {
-        let newPlayerX = playerX + Math.sin(playerA * Math.PI / 180)
-        let newPlayerY = playerY + Math.cos(playerA * Math.PI / 180)
-        if(maze[Math.floor(newPlayerY) * mazeWidth + Math.floor(newPlayerX)] !== '#') {
-            playerX = newPlayerX
-            playerY = newPlayerY
-        }
-    }
-    else if(e.code === 'KeyS') {
-        let newPlayerX = playerX - Math.sin(playerA * Math.PI / 180)
-        let newPlayerY = playerY - Math.cos(playerA * Math.PI / 180)
-        if(maze[Math.floor(newPlayerY) * mazeWidth + Math.floor(newPlayerX)] !== '#') {
-            playerX = newPlayerX
-            playerY = newPlayerY
-        }
-    }
+        playerAV = -8
+    else if(e.code === 'KeyW')
+        playerV = 0.3
+    else if(e.code === 'KeyS')
+        playerV = -0.3
+})
+
+document.addEventListener('keyup', (e) => {
+    if(e.code === 'KeyD' || e.code === 'KeyA')
+        playerAV = 0
+    else if(e.code === 'KeyW' || e.code === 'KeyS')
+        playerV = 0
 })
 
 window.requestAnimationFrame(updateScreen);
