@@ -1,24 +1,37 @@
-const numberCells = document.querySelectorAll(".number");
-for(let i = 0; i < 4; i++) {
-    numberCells[i].setAttribute("onDragStart","dragStart(event);")
-    numberCells[i].setAttribute("ondragover", "event.preventDefault();")
-    numberCells[i].setAttribute("ondrop", "onDrop(event);")
-}
-const opCells = document.querySelectorAll(".op");
-const opNumCells = document.querySelectorAll(".opNum");
-for(let i = 0; i < opNumCells.length; i++) {
-    opNumCells[i].setAttribute("onDragStart","dragStart(event);")
-    opNumCells[i].setAttribute("ondragover", "event.preventDefault();")
-    opNumCells[i].setAttribute("ondrop", "onDrop(event);")
-}
-const opAnsCells = document.querySelectorAll(".opAns");
-for(let i = 0; i < opAnsCells.length; i++) {
-    opAnsCells[i].setAttribute("onDragStart", "dragStart(event);")
-}
+const cells = document.querySelectorAll(".opNum, .numberWrapper, .opAns")
+const numberCells = document.querySelectorAll(".number")
+const opCells = document.querySelectorAll(".op")
+const equalCells = document.querySelectorAll(".equals")
 
-let numbers = [-1, -1, -1, -1, -1, -1]
-
+let ansLoc = [6, 9, 12]
+let numbers = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 let answer = [-1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+function initializeCells() {
+    for(let i = 0; i < cells.length; i++) {
+        cells[i].id = i.toString();
+        cells[i].setAttribute("ondrop", "onDrop(event);")
+        if(cells[i].className === "numberWrapper" || cells[i].className === "opAns")
+            cells[i].setAttribute("onDragStart", "dragStart(event);")
+        else
+            cells[i].setAttribute("ondragover", "event.preventDefault();")
+    }
+    for(let i = 0; i < 3; i++) {
+        opCells[i].addEventListener("click", function() {
+            switch(opCells[i].textContent) {
+                case "+": opCells[i].textContent = "-"
+                    break
+                case "-": opCells[i].textContent = "×"
+                    break
+                case "×": opCells[i].textContent = "÷"
+                    break
+                case "÷": opCells[i].textContent = "+"
+                    break
+            }
+            updateCells(3*i+4)
+        })
+    }
+}
 
 function generateNumbers() {
     while(!generateAnswer()) {
@@ -79,25 +92,107 @@ function do_op(first, second, op) {
     }
 }
 
+function clearCell(cell) {
+    cell.removeAttribute("onDragStart");
+
+    if(cell.className !== "opAns")
+        cell.setAttribute("ondragover", "event.preventDefault();")
+
+    cell.setAttribute("draggable", "false")
+
+    if(cell.className === "numberWrapper")
+        numberCells[parseInt(cell.id)].textContent = "";
+    else if(cell.className !== "opAns")
+        cell.textContent = "";
+    numbers[parseInt(cell.id)] = -1
+}
+
+function setCell(cell, num) {
+    if(parseInt(cell.id) === 12) {
+        cell.textContent = num.toString()
+        return
+    }
+    cell.removeAttribute("ondragover");
+    cell.setAttribute("onDragStart", "dragStart(event);")
+    cell.setAttribute("draggable", "true")
+    if(cell.className === "numberWrapper")
+        numberCells[parseInt(cell.id)].textContent = num.toString()
+    else
+        cell.textContent = num.toString();
+    numbers[parseInt(cell.id)] = num;
+}
+
 function dragStart(event) {
     event.dataTransfer.setData('text/plain', event.target.id);
 }
 
 function onDrop(event) {
-    const data = event.dataTransfer.getData("text/plain");
-    if(event.target.id !== "") {
-        return
-    }
-    event.target.textContent = numbers[data].toString();
-    for(let i = 0; i < opNumCells.length; i++) {
-        if(opNumCells[i].id === data) {
-            opNumCells[i].textContent = "";
-            opNumCells[i].id = "";
-        }
-    }
-    event.target.id = data;
-    numberCells[data].textContent = "";
-    event.preventDefault();
+    const data = parseInt(event.dataTransfer.getData("text/plain"))
+    const cur_id = parseInt(event.target.id)
+
+    setCell(event.target, numbers[data])
+    clearCell(cells[data])
+
+    if(ansLoc.includes(data))
+        ansLoc[ansLoc.indexOf(data)] = cur_id
+
+    if(cells[data].className === "opNum")
+        updateCells(data)
+    if(cells[cur_id].className === "opNum")
+        updateCells(cur_id);
+
+    numbers[data] = -1;
 }
 
+function updateCells(numCell) {
+    let add = numCell % 3 === 1 ? 1 : 0
+    let first = parseInt(cells[numCell - 1 + add].textContent)
+    let second = parseInt(cells[numCell + add].textContent)
+    let ans = numCell + 1 + add
+
+    let row = Math.floor((numCell - 1) / 3) - 1
+    if(Number.isInteger(first) && Number.isInteger(second)) {
+        let result
+        switch (opCells[row].textContent) {
+            case "+":
+                result = first + second
+                break
+            case "-":
+                result = first - second
+                break
+            case "×":
+                result = first * second
+                break
+            case "÷":
+                result = first / second
+                break
+        }
+        if(Number.isInteger(result) && result < 100) {
+            numbers[ans] = result
+            cells[ans].textContent = result.toString()
+            setCell(cells[ansLoc[row]], result)
+            numbers[ansLoc[row]] = result
+            if(![6, 9, 12].includes(ansLoc[row]))
+                updateCells(ansLoc[row])
+            equalCells[row].textContent = "="
+            equalCells[row].style.color = "black"
+        }
+        else {
+            equalCells[row].textContent = "≠"
+            equalCells[row].style.color = "darkred"
+        }
+    }
+    else {
+        equalCells[row].style.color = "black"
+        equalCells[row].textContent = "="
+        numbers[ansLoc[row]] = -1
+        cells[ans].textContent = ""
+        clearCell(cells[ansLoc[row]])
+        if(![6, 9, 12].includes(ansLoc[row]))
+            updateCells(ansLoc[row])
+        ansLoc[row] = row * 3 + 6
+    }
+}
+
+initializeCells();
 generateNumbers();
