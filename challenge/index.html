@@ -1,11 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        main {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 94vh;
+        }
+
+        .numbers {
+            border-collapse: collapse;
+            margin: auto;
+            transform: rotate(45deg);
+            border : 6px solid red;
+        }
+
+        .numberWrapper {
+            font-family: "Baskerville Old Face", serif;
+            font-weight: bold;
+            background-color: yellow;
+            text-align: center;
+            border: 6px solid red;
+            font-size: 120px;
+            width: 160px;
+            height: 160px;
+        }
+
+        .number {
+            transform: rotate(-45deg);
+        }
+
+        .answer {
+            border-spacing: 100px;
+            border-collapse: collapse;
+            margin: auto;
+        }
+
+        .opWrapper {
+            font-family: "Baskerville Old Face", serif;
+            font-weight: bold;
+            background-color: yellow;
+            font-size: 90px;
+            border: 6px solid red;
+            text-align: center;
+        }
+
+        .opNum, .opAns {
+            width: 95px;
+            border: 2px solid red;
+        }
+
+        .op {
+            width: 47px;
+        }
+
+    </style>
     <link rel="stylesheet" href="../style.css">
+    <script defer src="script.js"></script>
     <meta charset="UTF-8">
     <title>Challenge 24</title>
 </head>
 <body>
-<a href="../index.html"><button type="button">Home</button></a>
+<header>
+    <a href="../index.html"><button type="button">Home</button></a>
+</header>
+<main>
+    <table class="numbers">
+        <tr>
+            <td class="numberWrapper"><div class="number" draggable="true" id="0"></div></td>
+            <td class="numberWrapper"><div class="number" draggable="true" id="1"></div></td>
+        </tr>
+        <tr>
+            <td class="numberWrapper"><div class="number" draggable="true" id="2"></div></td>
+            <td class="numberWrapper"><div class="number" draggable="true" id="3"></div></td>
+        </tr>
+    </table>
+    <table class = "answer">
+        <tr class = "opWrapper">
+            <td draggable="true" class="opNum"></td>
+            <td class = "op"></td>
+            <td draggable="true" class="opNum"></td>
+            <td>=</td>
+            <td draggable="true" class="opAns"></td>
+        </tr>
+        <tr class = "opWrapper">
+            <td draggable="true" class="opNum"></td>
+            <td class = "op"></td>
+            <td draggable="true" class="opNum"></td>
+            <td>=</td>
+            <td draggable="true" class="opAns"></td>
+        </tr>
+        <tr class = "opWrapper">
+            <td draggable="true" class="opNum"></td>
+            <td class = "op"></td>
+            <td draggable="true" class="opNum"></td>
+            <td>=</td>
+            <td class="opAns"></td>
+        </tr>
+    </table>
+</main>
 </body>
 </html>
