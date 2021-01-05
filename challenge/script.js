@@ -180,6 +180,12 @@ function updateCells(numCell) {
         else {
             equalCells[row].textContent = "≠"
             equalCells[row].style.color = "darkred"
+            numbers[ansLoc[row]] = -1
+            cells[ans].textContent = ""
+            clearCell(cells[ansLoc[row]])
+            if(![6, 9, 12].includes(ansLoc[row]))
+                updateCells(ansLoc[row])
+            ansLoc[row] = row * 3 + 6
         }
     }
     else {
