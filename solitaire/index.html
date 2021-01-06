@@ -1,11 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        .main {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #top {
+            padding-bottom: 10px;
+            display: flex;
+            width: 100%;
+        }
+
+        #play {
+            display: flex;
+            float: right;
+        }
+
+        #winPiles {
+            margin-left: auto;
+            display: flex;
+            width: fit-content;
+        }
+
+        .card {
+            background-image: url("img/cards/back.png");
+            background-repeat: no-repeat;
+            height: 15vw;
+            padding-right: 1.5vw;
+            width: 10vw;
+            background-size: contain;
+        }
+
+        .pile {
+            width: 10vw;
+            padding-right: 1.5vw;
+            position: relative;
+        }
+
+        .pile .card {
+            position: absolute;
+        }
+    </style>
+    <script defer src="script.js"></script>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../style.css">
     <title>Solitaire</title>
 </head>
 <body>
 <header><a href="../index.html"><button type="button">Home</button></a></header>
+<main>
+    <div id="top">
+        <div class="card" id="draw"></div>
+        <div class="card" id="discard"></div>
+        <div id="winPiles">
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+        </div>
+    </div>
+    <div id="play">
+        <div class="pile" id="pile_1">
+            <div class="card up"></div>
+        </div>
+        <div class="pile" id="pile_2">
+            <div class="card"></div>
+            <div class="card up"></div>
+        </div>
+        <div class="pile" id="pile_3">
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card up"></div>
+        </div>
+        <div class="pile" id="pile_4">
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card up"></div>
+        </div>
+        <div class="pile" id="pile_5">
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card up"></div>
+        </div>
+        <div class="pile" id="pile_6">
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card up"></div>
+        </div>
+        <div class="pile" id="pile_7">
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card up"></div>
+        </div>
+    </div>
+</main>
 </body>
 </html>
