@@ -27,6 +27,13 @@ function setCardMovable(card) {
         else {
             setTimeout(function () {
                 event.target.style.visibility = "hidden";
+                let pile_id = parseInt(event.target.id.split(",")[0])
+                let pile_offset = parseInt(event.target.id.split(",")[1])
+                if(pile_offset !== pile_cards[pile_id].length - 1) {
+                    for(let i = pile_offset + 1; i < piles[pile_id].length; i++) {
+                        piles[pile_id][piles[pile_id].length - pile_cards[pile_id].length + i].style.visibility = "hidden";
+                    }
+                }
             }, 1)
         }
         event.dataTransfer.setData("text/plain", event.target.id);
@@ -36,6 +43,15 @@ function setCardMovable(card) {
         event.target.style.visibility = "visible";
         if(event.target.id === "discard") {
             drawCard()
+        }
+        else {
+            let pile_id = parseInt(event.target.id.split(",")[0])
+            let pile_offset = parseInt(event.target.id.split(",")[1])
+            if(pile_offset !== pile_cards[pile_id].length - 1) {
+                for(let i = pile_offset + 1; i < piles[pile_id].length; i++) {
+                    piles[pile_id][piles[pile_id].length - pile_cards[pile_id].length + i].style.visibility = "visible";
+                }
+            }
         }
     })
 }
@@ -64,7 +80,7 @@ function initializeBoard() {
     for(let i = 0; i < 4; i++) {
         piles.push(pileNodes[i].children)
         pile_cards.push([])
-        pileNodes[i].id = i.toString()
+        pileNodes[i].id = i.toString() + ",-1"
         pileNodes[i].setAttribute("ondragover", "event.preventDefault();")
         pileNodes[i].addEventListener("drop", dropCard)
     }
@@ -80,7 +96,7 @@ function initializeBoard() {
             piles[i][j].addEventListener("drop", dropCard)
         }
         pile_cards.push([assignCard(piles[i][piles[i].length - 1])])
-        piles[i][piles[i].length - 1].id = i.toString()
+        piles[i][piles[i].length - 1].id = i.toString() + ",0"
         piles[i][piles[i].length - 1].setAttribute("ondragover", "event.preventDefault();")
     }
 }
@@ -104,28 +120,39 @@ function drawCard() {
 function dropCard(event) {
     event.stopImmediatePropagation()
     const data = event.dataTransfer.getData("text/plain")
-    const pile_id = parseInt(event.target.id)
-    let attributes
+    const pile_id = parseInt(event.target.id.split(",")[0])
+    let attributes = []
     if(data === "discard") {
-        attributes = discard_cards[discard_index]
+        attributes.push(discard_cards[discard_index])
         discard_cards.splice(discard_index, 1)
         discard_index--;
     }
     else {
-        let prev_pile = parseInt(data)
-        attributes = pile_cards[prev_pile].pop()
-        piles[prev_pile][piles[prev_pile].length - 1].remove()
+        let prev_pile = parseInt(data.split(",")[0])
+        let pile_offset = parseInt(data.split(",")[1])
+        if(pile_id < 4 && pile_cards[prev_pile].length - pile_offset !== 1)
+            return
+        for(let i = pile_offset; i < pile_cards[prev_pile].length; i++) {
+            piles[prev_pile][piles[prev_pile].length - pile_cards[prev_pile].length + i].remove()
+            attributes.push(pile_cards[prev_pile][i])
+        }
+        pile_cards[prev_pile].splice(pile_offset)
+
         if(piles[prev_pile].length > 0) {
             let prevCard = piles[prev_pile][piles[prev_pile].length - 1]
             prevCard.setAttribute("ondragover", "event.preventDefault();")
-            prevCard.id = prev_pile
+
             if(!piles[prev_pile][piles[prev_pile].length - 1].classList.contains("up")) {
+                prevCard.id = prev_pile.toString() + ",0"
                 pile_cards[prev_pile].push(assignCard(piles[prev_pile][piles[prev_pile].length - 1]))
                 prevCard.classList.add("up")
             }
+            else {
+                prevCard.id = prev_pile.toString() + "," + (pile_cards[prev_pile].length - 1).toString()
+            }
         }
         else {
-            pileNodes[prev_pile].id = prev_pile.toString()
+            pileNodes[prev_pile].id = prev_pile.toString() + ",-1"
             pileNodes[prev_pile].setAttribute("ondragover", "event.preventDefault();")
         }
     }
@@ -133,24 +160,26 @@ function dropCard(event) {
     if(piles[pile_id].length > 0) {
         prevCard = piles[pile_id][piles[pile_id].length - 1]
         prevCard.removeAttribute("ondragover")
-        prevCard.setAttribute("draggable", "false")
-        prevCard.removeAttribute("id")
     }
 
-    let newCard = document.createElement("div")
-    newCard.classList.add("card", "up")
-    if(piles[pile_id].length > 0 && pile_id > 3)
-        newCard.style.top = (parseInt(prevCard.style.top.split("v")[0]) + 2) + "vw"
-    else
-        newCard.style.top = "0vw"
-    newCard.id = pile_id.toString()
-    assignCard(newCard, attributes)
+    let newCard
+    let blankSpace = !(piles[pile_id].length > 0 && pile_id > 3)
+    for(let i = 0; i < attributes.length; i++) {
+        newCard = document.createElement("div")
+        newCard.classList.add("card", "up")
+        if(blankSpace)
+            newCard.style.top = (i * 2).toString() + "vw"
+        else
+            newCard.style.top = (parseInt(prevCard.style.top.split("v")[0]) + 2 * i + 2) + "vw"
+        newCard.id = pile_id.toString() + "," + pile_cards[pile_id].length.toString()
+        assignCard(newCard, attributes[i])
 
-    pileNodes[pile_id].appendChild(newCard)
-    pile_cards[pile_id].push(attributes)
+        pileNodes[pile_id].appendChild(newCard)
+        pile_cards[pile_id].push(attributes[i])
 
-    if(piles[pile_id].length === 1) {
-        pileNodes[pile_id].removeAttribute("ondragover")
+        if (piles[pile_id].length === 1) {
+            pileNodes[pile_id].removeAttribute("ondragover")
+        }
     }
 
     newCard.setAttribute("ondragover", "event.preventDefault();")
