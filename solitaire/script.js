@@ -14,10 +14,12 @@ let discard_index = 0
 let draw = document.getElementById("draw")
 
 
+// Makes a card able to be dragged with the corresponding drag listeners
 function setCardMovable(card) {
     card.setAttribute("draggable", "true");
     card.addEventListener("dragstart", function(event) {
         event.stopImmediatePropagation()
+        // Makes the correct card show when moving a card from the discard pile
         if(event.target.id === "discard") {
             setTimeout(function () {
                 discard_index -= 2;
@@ -25,6 +27,7 @@ function setCardMovable(card) {
             }, 1)
         }
         else {
+            // Makes the card and all cards moved with it disappear
             setTimeout(function () {
                 event.target.style.visibility = "hidden";
                 let pile_id = parseInt(event.target.id.split(",")[0])
@@ -39,6 +42,7 @@ function setCardMovable(card) {
         event.dataTransfer.setData("text/plain", event.target.id);
     })
     card.addEventListener("dragend", function(event) {
+        // Makes all necessary cards reappear
         event.stopImmediatePropagation()
         event.target.style.visibility = "visible";
         if(event.target.id === "discard") {
@@ -56,6 +60,7 @@ function setCardMovable(card) {
     })
 }
 
+// Returns an unused card
 function getNewCard() {
     let card_name, suit
     do {
@@ -66,6 +71,7 @@ function getNewCard() {
     return [card_name, suit]
 }
 
+// Sets a card element to a specific card. If attributes is unspecified it sets it to a random unused card
 function assignCard(card, attributes) {
     card.classList.add("card")
     if(attributes == null) {
@@ -77,6 +83,7 @@ function assignCard(card, attributes) {
 }
 
 function initializeBoard() {
+    // Set up the win piles
     for(let i = 0; i < 4; i++) {
         piles.push(pileNodes[i].children)
         pile_cards.push([])
@@ -84,10 +91,12 @@ function initializeBoard() {
         pileNodes[i].setAttribute("ondragover", "event.preventDefault();")
         pileNodes[i].addEventListener("drop", dropCard)
     }
+    // Generates the 24 cards in the draw pile
     for(let i = 0; i < 24; i++) {
         discard_cards.push(getNewCard());
     }
     document.getElementById("drawWrapper").addEventListener("click", drawCard)
+    // Sets up the piles on the board
     for (let i = 4; i < pileNodes.length; i++) {
         pileNodes[i].addEventListener("drop", dropCard)
         piles.push(pileNodes[i].children)
@@ -101,6 +110,7 @@ function initializeBoard() {
     }
 }
 
+// Draws a card from the deck
 function drawCard() {
     if(discard_index === -1 || discard_index === discard_cards.length) {
         discard.style.visibility = "hidden"
@@ -125,12 +135,15 @@ function dropCard(event) {
 
     let first_attribute = data === "discard" ? discard_cards[discard_index] : pile_cards[parseInt(data.split(",")[0])][parseInt(data.split(",")[1])]
 
+    // Checks if this is a valid move
+    // Win piles
     if(pile_id < 4) {
         if(pile_cards[pile_id].length === 0 && first_attribute[0] !== 0)
             return
         if(pile_cards[pile_id].length > 0 && (first_attribute[1] !== pile_cards[pile_id][0][1] ||  first_attribute[0] - pile_cards[pile_id][pile_cards[pile_id].length - 1][0] !== 1))
             return
     }
+    // Regular piles
     else {
         if(pile_cards[pile_id].length === 0 && first_attribute[0] !== 12)
             return
@@ -144,6 +157,7 @@ function dropCard(event) {
     }
 
 
+    // Pushes the cards to be moved into attributes and removes them from their old place
     if(data === "discard") {
         attributes.push(discard_cards[discard_index])
         discard_cards.splice(discard_index, 1)
@@ -162,6 +176,7 @@ function dropCard(event) {
         }
         pile_cards[prev_pile].splice(pile_offset)
 
+        // Deals with the card underneath the moved card
         if(piles[prev_pile].length > 0) {
             let prevCard = piles[prev_pile][piles[prev_pile].length - 1]
             prevCard.setAttribute("ondragover", "event.preventDefault();")
@@ -187,6 +202,7 @@ function dropCard(event) {
         prevCard.removeAttribute("ondragover")
     }
 
+    // Create a new card for every card to be moved, put it in right place
     let newCard
     let blankSpace = !(piles[pile_id].length > 0 && pile_id > 3)
     for(let i = 0; i < attributes.length; i++) {
