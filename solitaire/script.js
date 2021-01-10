@@ -122,6 +122,28 @@ function dropCard(event) {
     const data = event.dataTransfer.getData("text/plain")
     const pile_id = parseInt(event.target.id.split(",")[0])
     let attributes = []
+
+    let first_attribute = data === "discard" ? discard_cards[discard_index] : pile_cards[parseInt(data.split(",")[0])][parseInt(data.split(",")[1])]
+
+    if(pile_id < 4) {
+        if(pile_cards[pile_id].length === 0 && first_attribute[0] !== 0)
+            return
+        if(pile_cards[pile_id].length > 0 && (first_attribute[1] !== pile_cards[pile_id][0][1] ||  first_attribute[0] - pile_cards[pile_id][pile_cards[pile_id].length - 1][0] !== 1))
+            return
+    }
+    else {
+        if(pile_cards[pile_id].length === 0 && first_attribute[0] !== 12)
+            return
+        if(pile_cards[pile_id].length > 0) {
+            if(pile_cards[pile_id][pile_cards[pile_id].length - 1][0] - first_attribute[0] !== 1)
+                return
+            let drop_suit = pile_cards[pile_id][pile_cards[pile_id].length - 1][1]
+            if((drop_suit < 2 && first_attribute[1] < 2) || (drop_suit > 1 && first_attribute[1] > 1))
+                return
+        }
+    }
+
+
     if(data === "discard") {
         attributes.push(discard_cards[discard_index])
         discard_cards.splice(discard_index, 1)
@@ -130,8 +152,10 @@ function dropCard(event) {
     else {
         let prev_pile = parseInt(data.split(",")[0])
         let pile_offset = parseInt(data.split(",")[1])
+
         if(pile_id < 4 && pile_cards[prev_pile].length - pile_offset !== 1)
             return
+
         for(let i = pile_offset; i < pile_cards[prev_pile].length; i++) {
             piles[prev_pile][piles[prev_pile].length - pile_cards[prev_pile].length + i].remove()
             attributes.push(pile_cards[prev_pile][i])
@@ -156,6 +180,7 @@ function dropCard(event) {
             pileNodes[prev_pile].setAttribute("ondragover", "event.preventDefault();")
         }
     }
+
     let prevCard
     if(piles[pile_id].length > 0) {
         prevCard = piles[pile_id][piles[pile_id].length - 1]
