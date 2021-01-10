@@ -1,3 +1,4 @@
+let pileNodes = document.querySelectorAll(".pile")
 let piles = []
 let pile_cards = []
 
@@ -19,10 +20,9 @@ function setCardMovable(card) {
         event.stopImmediatePropagation()
         if(event.target.id === "discard") {
             setTimeout(function () {
-                console.log(discard_index)
                 discard_index -= 2;
                 drawCard()
-            }, 20)
+            }, 1)
         }
         else {
             setTimeout(function () {
@@ -36,7 +36,6 @@ function setCardMovable(card) {
         event.target.style.visibility = "visible";
         if(event.target.id === "discard") {
             drawCard()
-            console.log(discard_index)
         }
     })
 }
@@ -66,7 +65,6 @@ function initializeBoard() {
         discard_cards.push(getNewCard());
     }
     document.getElementById("drawWrapper").addEventListener("click", drawCard)
-    let pileNodes = document.querySelectorAll(".pile")
     for (let i = 0; i < pileNodes.length; i++) {
         piles.push(pileNodes[i].children)
         for (let j = 0; j < piles[i].length; j++) {
@@ -79,10 +77,11 @@ function initializeBoard() {
     }
 }
 
-function drawCard(event) {
+function drawCard() {
     if(discard_index === -1 || discard_index === discard_cards.length) {
         discard.style.visibility = "hidden"
-        draw.style.visibility = "visible"
+        if(discard_cards.length > 1 || (discard_cards.length === 1 && discard_index !== -1))
+            draw.style.visibility = "visible"
         discard_index = 0
         return
     }
@@ -96,13 +95,43 @@ function drawCard(event) {
 
 function dropCard(event) {
     const data = event.dataTransfer.getData("text/plain")
+    const pile_id = parseInt(event.target.id)
+    let attributes
     if(data === "discard") {
+        attributes = discard_cards[discard_index]
         discard_cards.splice(discard_index, 1)
         discard_index--;
     }
     else {
-
+        let prev_pile = parseInt(data)
+        attributes = pile_cards[prev_pile]
+        piles[prev_pile][piles[prev_pile].length - 1].remove()
+        //TODO: Make it so it doesn't reassign already flipped up cards
+        if(piles[prev_pile].length > 0) {
+            let prevCard = piles[prev_pile][piles[prev_pile].length - 1]
+            prevCard.setAttribute("ondragover", "event.preventDefault();")
+            prevCard.addEventListener("drop", dropCard)
+            prevCard.id = prev_pile
+            pile_cards[prev_pile] = assignCard(piles[prev_pile][piles[prev_pile].length - 1])
+        }
     }
+    let prevCard = piles[pile_id][piles[pile_id].length - 1]
+    prevCard.removeAttribute("ondragover")
+    prevCard.setAttribute("draggable", "false")
+    prevCard.removeEventListener("drop", dropCard)
+    prevCard.removeAttribute("id")
+
+    let newCard = document.createElement("div")
+    newCard.classList.add("card")
+    newCard.style.top = (parseInt(prevCard.style.top.split("v")[0]) + 2) + "vw"
+    newCard.id = pile_id.toString()
+    assignCard(newCard, attributes)
+
+    pileNodes[pile_id].appendChild(newCard)
+    pile_cards[pile_id] = attributes
+
+    newCard.setAttribute("ondragover", "event.preventDefault();")
+    newCard.addEventListener("drop", dropCard)
 }
 
 initializeBoard()
