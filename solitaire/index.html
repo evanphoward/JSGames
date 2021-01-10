@@ -2,10 +2,6 @@
 <html lang="en">
 <head>
     <style>
-        .main {
-            display: flex;
-            flex-direction: column;
-        }
 
         #top {
             padding-bottom: 20px;
@@ -40,7 +36,9 @@
         }
 
         .pile {
-            width: 10vw;
+            border: 3px solid grey;
+            height: 15vw;
+            width: 9.7vw;
             margin-right: 1.5vw;
             position: relative;
         }
@@ -55,43 +53,42 @@
     <title>Solitaire</title>
 </head>
 <body>
-<header><a href="../index.html"><button type="button">Home</button></a></header>
-<main>
+    <header><a href="../index.html"><button type="button">Home</button></a></header>
     <div id="top">
         <div id="drawWrapper"><div class="card" id="draw"></div></div>
         <div id="discardWrapper"><div id="discard"></div></div>
         <div id="winPiles">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
+            <div class="pile"></div>
+            <div class="pile"></div>
+            <div class="pile"></div>
+            <div class="pile"></div>
         </div>
     </div>
     <div id="play">
         <div class="pile" id="pile_1">
-            <div class="card"></div>
+            <div class="card up"></div>
         </div>
         <div class="pile" id="pile_2">
             <div class="card"></div>
-            <div class="card"></div>
+            <div class="card up"></div>
         </div>
         <div class="pile" id="pile_3">
             <div class="card"></div>
             <div class="card"></div>
-            <div class="card"></div>
+            <div class="card up"></div>
         </div>
         <div class="pile" id="pile_4">
             <div class="card"></div>
             <div class="card"></div>
             <div class="card"></div>
-            <div class="card"></div>
+            <div class="card up"></div>
         </div>
         <div class="pile" id="pile_5">
             <div class="card"></div>
             <div class="card"></div>
             <div class="card"></div>
             <div class="card"></div>
-            <div class="card"></div>
+            <div class="card up"></div>
         </div>
         <div class="pile" id="pile_6">
             <div class="card"></div>
@@ -99,7 +96,7 @@
             <div class="card"></div>
             <div class="card"></div>
             <div class="card"></div>
-            <div class="card"></div>
+            <div class="card up"></div>
         </div>
         <div class="pile" id="pile_7">
             <div class="card"></div>
@@ -108,9 +105,8 @@
             <div class="card"></div>
             <div class="card"></div>
             <div class="card"></div>
-            <div class="card"></div>
+            <div class="card up"></div>
         </div>
     </div>
-</main>
 </body>
 </html>
