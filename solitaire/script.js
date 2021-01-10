@@ -84,7 +84,7 @@ function initializeBoard() {
         pileNodes[i].setAttribute("ondragover", "event.preventDefault();")
         pileNodes[i].addEventListener("drop", dropCard)
     }
-    for(let i = 0; i < 22; i++) {
+    for(let i = 0; i < 24; i++) {
         discard_cards.push(getNewCard());
     }
     document.getElementById("drawWrapper").addEventListener("click", drawCard)
