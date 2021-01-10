@@ -18,10 +18,10 @@
             float: right;
         }
 
-        #draw, #discard, #winPiles div {
+        #drawWrapper, #discardWrapper, #winPiles div {
             margin-right: 1.5vw;
             border: 3px solid grey;
-            width: 10vw;
+            width: 9.7vw;
         }
 
         #winPiles {
@@ -31,6 +31,7 @@
         }
 
         .card {
+            margin: auto;
             background-image: url("img/cards/back.png");
             background-repeat: no-repeat;
             height: 15vw;
@@ -47,11 +48,6 @@
         .pile .card {
             position: absolute;
         }
-
-        .hide {
-            transition: 0.01s;
-            transform: translateX(-9999px);
-        }
     </style>
     <script defer src="script.js"></script>
     <meta charset="UTF-8">
@@ -62,8 +58,8 @@
 <header><a href="../index.html"><button type="button">Home</button></a></header>
 <main>
     <div id="top">
-        <div id="draw"><div class="card"></div></div>
-        <div id="discard"><div></div></div>
+        <div id="drawWrapper"><div class="card" id="draw"></div></div>
+        <div id="discardWrapper"><div id="discard"></div></div>
         <div id="winPiles">
             <div></div>
             <div></div>
