@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        main {
+            display: flex;
+            height: 94vh;
+        }
+
+        table {
+            padding-top: 100px;
+            margin: auto;
+            border-collapse: collapse;
+        }
+
+        .covered {
+            visibility: hidden;
+        }
+
+        td {
+            height: 30px;
+            width: 30px;
+            border: 3px solid red;
+            background-color: #b5bb17;
+        }
+
+        div {
+            text-align: center;
+            height: 30px;
+            width: 30px;
+            line-height: 30px;
+            background-color: yellow;
+        }
+
+        .mine {
+            background-repeat: no-repeat;
+            background-position: center;
+            background-image: url(img/bomb.png);
+            background-size: contain;
+        }
+    </style>
+    <link rel="stylesheet" href="../style.css">
+    <script defer src="script.js"></script>
+    <meta charset="UTF-8">
+    <title>Minesweeper</title>
+</head>
+<body>
+<header>
+    <a href="../index.html"><button type="button">Home</button></a>
+</header>
+<main><table></table></main>
+</body>
+</html>
