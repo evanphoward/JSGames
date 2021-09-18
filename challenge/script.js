@@ -174,6 +174,9 @@ function updateCells(numCell) {
             numbers[ansLoc[row]] = result
             if(![6, 9, 12].includes(ansLoc[row]))
                 updateCells(ansLoc[row])
+            if(ans == 12)
+                if(![numbers[4], numbers[5], numbers[7], numbers[8], numbers[10], numbers[11]].includes(-1))
+                    cells[ans].style.color = result == 24 ? "green" : "black"
             equalCells[row].textContent = "="
             equalCells[row].style.color = "black"
         }

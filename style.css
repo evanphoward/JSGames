@@ -1,3 +1,11 @@
 body {
     background-color: darkslategray;
 }
+
+header {
+    width: auto;
+    background-color: #319292;
+    border: 2px solid #666666;
+    padding: 6px;
+    margin-bottom: 6px;
+}
